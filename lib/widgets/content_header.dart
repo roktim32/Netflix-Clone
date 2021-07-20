@@ -138,33 +138,83 @@ class __ContentHeaderDesktopState extends State<_ContentHeaderDesktop> {
             ),
           ),
           Positioned(
-            bottom: 110.0,
-            child: SizedBox(
-              width: 250.0,
-              child: Image.asset(widget.featuredContent.titleImageUrl),
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 40.0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            left: 60.0,
+            right: 60.0,
+            bottom: 150.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                VerticalIconButton(
-                  icon: Icons.add,
-                  title: 'List',
-                  onTap: () => print('My List'),
+                SizedBox(
+                  width: 250.0,
+                  child: Image.asset(widget.featuredContent.titleImageUrl),
                 ),
-                _PlayButton(),
-                VerticalIconButton(
-                  icon: Icons.info_outline,
-                  title: 'Info',
-                  onTap: () => print('Info'),
+                const SizedBox(
+                  height: 15.0,
+                ),
+                Text(
+                  widget.featuredContent.description,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w500,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        offset: Offset(2.0, 4.0),
+                        blurRadius: 6.0,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20.0,
+                ),
+                Row(
+                  children: [
+                    _PlayButton(),
+                    SizedBox(
+                      width: 16.0,
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () => print('More Info'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.white,
+                      ),
+                      icon: const Icon(
+                        Icons.info_outline,
+                        color: Colors.black,
+                      ),
+                      label: const Text(
+                        'More Info',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20.0,
+                    ),
+                    if (_videoPlayerController.value.isInitialized)
+                      IconButton(
+                        icon: Icon(
+                          _isMuted ? Icons.volume_off : Icons.volume_up,
+                        ),
+                        color: Colors.white,
+                        iconSize: 30.0,
+                        onPressed: () => setState(() {
+                          _isMuted
+                              ? _videoPlayerController.setVolume(100)
+                              : _videoPlayerController.setVolume(0);
+                          _isMuted = _videoPlayerController.value.volume == 0;
+                        }),
+                      )
+                  ],
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
