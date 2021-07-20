@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_netflix_responsive_ui/models/models.dart';
 import 'package:flutter_netflix_responsive_ui/widgets/widgets.dart';
+import 'package:video_player/video_player.dart';
 
 class ContentHeader extends StatelessWidget {
   final Content featuredContent;
@@ -77,64 +78,95 @@ class _ContentHeaderMobile extends StatelessWidget {
   }
 }
 
-class _ContentHeaderDesktop extends StatelessWidget {
+class _ContentHeaderDesktop extends StatefulWidget {
   final Content featuredContent;
 
-  const _ContentHeaderDesktop({Key key, this.featuredContent}) : super(key: key);
+  const _ContentHeaderDesktop({Key key, this.featuredContent})
+      : super(key: key);
+
+  @override
+  __ContentHeaderDesktopState createState() => __ContentHeaderDesktopState();
+}
+
+class __ContentHeaderDesktopState extends State<_ContentHeaderDesktop> {
+  VideoPlayerController _videoPlayerController;
+  bool _isMuted = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _videoPlayerController =
+        VideoPlayerController.network(widget.featuredContent.videoUrl)
+          ..initialize().then((_) => setState(() {}));
+    // ..play();
+  }
+
+  @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    // TODO: implement dispose
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          height: 500.0,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(featuredContent.imageUrl),
-              fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () => _videoPlayerController.value.isPlaying
+          ? _videoPlayerController.pause()
+          : _videoPlayerController.play(),
+      child: Stack(
+        alignment: Alignment.bottomLeft,
+        children: [
+          Container(
+            height: 500.0,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(widget.featuredContent.imageUrl),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
-        Container(
-          height: 500.0,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.black, Colors.transparent],
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
+          Container(
+            height: 500.0,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.black, Colors.transparent],
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+              ),
             ),
           ),
-        ),
-        Positioned(
-          bottom: 110.0,
-          child: SizedBox(
-            width: 250.0,
-            child: Image.asset(featuredContent.titleImageUrl),
+          Positioned(
+            bottom: 110.0,
+            child: SizedBox(
+              width: 250.0,
+              child: Image.asset(widget.featuredContent.titleImageUrl),
+            ),
           ),
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 40.0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              VerticalIconButton(
-                icon: Icons.add,
-                title: 'List',
-                onTap: () => print('My List'),
-              ),
-              _PlayButton(),
-              VerticalIconButton(
-                icon: Icons.info_outline,
-                title: 'Info',
-                onTap: () => print('Info'),
-              ),
-            ],
-          ),
-        )
-      ],
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 40.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                VerticalIconButton(
+                  icon: Icons.add,
+                  title: 'List',
+                  onTap: () => print('My List'),
+                ),
+                _PlayButton(),
+                VerticalIconButton(
+                  icon: Icons.info_outline,
+                  title: 'Info',
+                  onTap: () => print('Info'),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }
