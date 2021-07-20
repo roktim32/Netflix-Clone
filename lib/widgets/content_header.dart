@@ -98,8 +98,9 @@ class __ContentHeaderDesktopState extends State<_ContentHeaderDesktop> {
     super.initState();
     _videoPlayerController =
         VideoPlayerController.network(widget.featuredContent.videoUrl)
-          ..initialize().then((_) => setState(() {}));
-    // ..play();
+          ..initialize().then((_) => setState(() {}))
+          ..setVolume(0)
+          ..play();
   }
 
   @override
@@ -118,22 +119,33 @@ class __ContentHeaderDesktopState extends State<_ContentHeaderDesktop> {
       child: Stack(
         alignment: Alignment.bottomLeft,
         children: [
-          Container(
-            height: 500.0,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(widget.featuredContent.imageUrl),
-                fit: BoxFit.cover,
-              ),
-            ),
+          AspectRatio(
+            aspectRatio: _videoPlayerController.value.isInitialized
+                ? _videoPlayerController.value.aspectRatio
+                : 2.344,
+            child: _videoPlayerController.value.isInitialized
+                ? VideoPlayer(_videoPlayerController)
+                : Image.asset(
+                    widget.featuredContent.imageUrl,
+                    fit: BoxFit.cover,
+                  ),
           ),
-          Container(
-            height: 500.0,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.black, Colors.transparent],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: -1.0,
+            child: AspectRatio(
+              aspectRatio: _videoPlayerController.value.isInitialized
+                  ? _videoPlayerController.value.aspectRatio
+                  : 2.344,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.black, Colors.transparent],
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                  ),
+                ),
               ),
             ),
           ),
@@ -178,10 +190,13 @@ class __ContentHeaderDesktopState extends State<_ContentHeaderDesktop> {
                     ElevatedButton.icon(
                       onPressed: () => print('More Info'),
                       style: ElevatedButton.styleFrom(
+                        padding:
+                            const EdgeInsets.fromLTRB(25.0, 10.0, 30.0, 10.0),
                         primary: Colors.white,
                       ),
                       icon: const Icon(
                         Icons.info_outline,
+                        size: 30.0,
                         color: Colors.black,
                       ),
                       label: const Text(
@@ -224,25 +239,25 @@ class __ContentHeaderDesktopState extends State<_ContentHeaderDesktop> {
 class _PlayButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(15.0, 5.0, 20.0, 5.0),
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          primary: Colors.white, // background
-        ),
-        onPressed: () => print('Play'),
-        icon: const Icon(
-          Icons.play_arrow,
-          size: 30.0,
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        padding: Responsive.isDesktop(context)
+            ? const EdgeInsets.fromLTRB(15.0, 5.0, 20.0, 5.0)
+            : const EdgeInsets.fromLTRB(25.0, 10.0, 30.0, 10.0),
+        primary: Colors.white, // background
+      ),
+      onPressed: () => print('Play'),
+      icon: const Icon(
+        Icons.play_arrow,
+        size: 30.0,
+        color: Colors.black,
+      ),
+      label: const Text(
+        'Play',
+        style: TextStyle(
           color: Colors.black,
-        ),
-        label: const Text(
-          'Play',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16.0,
-            fontWeight: FontWeight.w600,
-          ),
+          fontSize: 16.0,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
